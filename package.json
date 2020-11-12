@@ -1,0 +1,35 @@
+{
+  "name": "iframe-comm",
+  "version": "1.0.0",
+  "description": "A tool for iframe communication",
+  "main": "./src/iframe-comm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack-cli --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leechikit/iframe-communication.git"
+  },
+  "keywords": [
+    "iframe",
+    "communication"
+  ],
+  "author": "leechikit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Leechikit/iframe-communication/issues"
+  },
+  "homepage": "https://github.com/Leechikit/iframe-communication#readme",
+  "engines": {
+    "node": ">=7.6.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  }
+}
