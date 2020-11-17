@@ -61,3 +61,67 @@ embed.onError(envent, function(){})
 ```
 embed.onReady(envent, function({height}){})
 ```
+
+## Example
+
+### 父页面
+```
+<template>
+  <div>
+    <div class="embed-iframe"></div>
+    <button @click="onClick">button</button>
+  </div>
+</template>
+<script>
+import EmbedIframe from 'embed-iframe'
+
+export default {
+  data() {
+    return {
+      embed: null
+    }
+  },
+  mounted() {
+    this.embed = EmbedIframe.init({ url: "http://xxx" })
+
+    this.embed.onLoad(() => {
+      this.embed.emit("message", "iframe loaded")
+    })
+
+    this.embed.on('form:submit', () => {
+      console.log('form:submit')
+    })
+  },
+  methods: {
+    onClick() {
+      this.embed.emit("message", "send some message to iframe")
+    }
+  }
+}
+</script>
+```
+
+### 内嵌子页面
+```
+<template>
+  <div>
+    <button @click="onClick('form:submit')">button</button>
+  </div>
+</template>
+<script>
+import EmbedIframe from 'embed-iframe'
+
+export default {
+  mounted() {
+    EmbedIframe.parent.on("message", value => {
+      console.log(value)
+    })
+  },
+  methods: {
+    onClick(event) {
+      EmbedIframe.parent.emit(event)
+    }
+  }
+}
+</script>
+```
