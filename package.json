@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Leechikit/iframe-communication.git"
+    "url": "git+https://github.com/Leechikit/embed-iframe.git"
   },
   "keywords": [
     "embed",
@@ -19,9 +19,9 @@
   "author": "leechikit",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Leechikit/iframe-communication/issues"
+    "url": "https://github.com/Leechikit/embed-iframe/issues"
   },
-  "homepage": "https://github.com/Leechikit/iframe-communication#readme",
+  "homepage": "https://github.com/Leechikit/embed-iframe#readme",
   "engines": {
     "node": ">=7.6.0"
   },

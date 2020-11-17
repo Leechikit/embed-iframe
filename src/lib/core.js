@@ -3,7 +3,7 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-17 14:51:27
+ * @LastEditTime: 2020-11-17 15:46:55
  */
 
 const getUid = require('../utils/getUid')
@@ -34,7 +34,7 @@ export class EmbedIframe {
     window.addEventListener('message', this._messageEventHandler.bind(this))
   }
 
-  create({ url, height, minHeight, maxHeight }, selector = '.iframe-comm') {
+  create({ url, height, minHeight, maxHeight }, selector = '.embed-iframe') {
     if (!selector || !url) throw new Error('params is not right!')
     // 解析子框架URL
     this._targetOrigin = this._getOrigin(url)
@@ -71,9 +71,13 @@ export class EmbedIframe {
     this._iframe.parentNode.removeChild(this._iframe)
   }
 
-  load(url) {
+  load({ url, height, minHeight, maxHeight }) {
     if (!url) return
+    this._resetHeight = height
     this._iframe.src = url
+    this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
+    minHeight && (this._iframe.style.minHeight = minHeight)
+    maxHeight && (this._iframe.style.maxHeight = maxHeight)
   }
 
   emit(event, ...args) {
