@@ -35,31 +35,31 @@ embed.load(options)
 
 ### `emit` 发送消息
 ```
-embed.emit(envent, value)
+embed.emit(event, value)
 ```
 
 ## Events
 
 ### `on` 自定义监听事件
 ```
-embed.on(envent, function(value){})
+embed.on(event, function(value){})
 ```
 
 ### `onLoad` 监听嵌入页面加载成功
 ```
-embed.onLoad(envent, function(){})
+embed.onLoad(event, function(){})
 ```
 
 ### `onError` 监听嵌入页面加载失败
 ```
-embed.onError(envent, function(){})
+embed.onError(event, function(){})
 ```
 
 ### `onReady` 监听嵌入页面渲染完成
 
 返回页面高度
 ```
-embed.onReady(envent, function({height}){})
+embed.onReady(event, function({height}){})
 ```
 
 ## Example
