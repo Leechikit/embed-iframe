@@ -3,15 +3,18 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-16 18:03:11
+ * @LastEditTime: 2020-11-17 14:51:27
  */
 
+const getUid = require('../utils/getUid')
+
 const IFRAME_EVENT = {
-  resize: 'iframe_resize'
+  ready: 'iframe_ready'
 }
 
-export class IframeComm {
+export class EmbedIframe {
   constructor() {
+    this._uid = getUid()
     this._events = []
     this._isParentFrame = window.parent === window
     this._selfOrign = location.origin
@@ -23,7 +26,7 @@ export class IframeComm {
 
     this._contentWindow = this._isParentFrame ? null : window.parent
 
-    // 子框架发送子框架高度
+    // 子框架加载后通知父框架
     if (!this._isParentFrame) {
       window.addEventListener('load', this._loadEventHandler.bind(this))
     }
@@ -43,13 +46,15 @@ export class IframeComm {
     if (containerEl) {
       this._iframe = document.createElement('iframe')
       this._iframe.src = url
+      this._iframe.id = this._uid
       this._iframe.style.width = '100%'
       this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
       minHeight && (this._iframe.style.minHeight = minHeight)
       maxHeight && (this._iframe.style.maxHeight = maxHeight)
+
       this._iframe.addEventListener(
         'load',
-        event => this._onReady && this._onReady.call(null, event)
+        event => this._onLoad && this._onLoad.call(null, event)
       )
       this._iframe.addEventListener(
         'error',
@@ -71,7 +76,7 @@ export class IframeComm {
     this._iframe.src = url
   }
 
-  send(event, ...args) {
+  emit(event, ...args) {
     if (!this._contentWindow) return
     this._contentWindow.postMessage(
       {
@@ -87,16 +92,20 @@ export class IframeComm {
     this._events[event] = cb
   }
 
-  onReady(cb) {
-    this._onReady = typeof cb === 'function' ? cb : () => {}
+  onLoad(cb) {
+    this._onLoad = typeof cb === 'function' ? cb : () => void 0
   }
 
   onError(cb) {
-    this._onError = typeof cb === 'function' ? cb : () => {}
+    this._onError = typeof cb === 'function' ? cb : () => void 0
+  }
+
+  onReady(cb) {
+    this._onReady = typeof cb === 'function' ? cb : () => void 0
   }
 
   _loadEventHandler(event) {
-    this.send(IFRAME_EVENT.resize, {
+    this.emit(IFRAME_EVENT.ready, {
       height: document.documentElement.scrollHeight
     })
   }
@@ -113,13 +122,12 @@ export class IframeComm {
 
     if (this._iframe && this._iframe.src !== _iframeSrc) return
 
-    // 父框架设置子框架高度
-    if (
-      this._isParentFrame &&
-      _iframeEvent === IFRAME_EVENT.resize &&
-      !this._resetHeight
-    ) {
-      this._iframe.style.height = args[0].height + 'px'
+    // 子框架渲染完毕
+    if (this._isParentFrame && _iframeEvent === IFRAME_EVENT.ready) {
+      // 没有配置高度按文档高度设置
+      !this._resetHeight && (this._iframe.style.height = args[0].height + 'px')
+      // 回调
+      this._onReady && this._onReady.call(null, ...args)
     }
 
     let cb = this._events[_iframeEvent]

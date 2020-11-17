@@ -1,8 +1,8 @@
 {
-  "name": "iframe-comm",
+  "name": "embed-iframe",
   "version": "1.0.0",
-  "description": "A tool for iframe communication",
-  "main": "./src/iframe-comm.js",
+  "description": "A tool for embedding iframe and iframe communication",
+  "main": "./src/embed-iframe.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack-cli --config webpack.config.js"
@@ -12,6 +12,7 @@
     "url": "git+https://github.com/Leechikit/iframe-communication.git"
   },
   "keywords": [
+    "embed",
     "iframe",
     "communication"
   ],

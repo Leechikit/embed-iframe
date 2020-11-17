@@ -3,17 +3,17 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:15:34
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-16 18:02:02
+ * @LastEditTime: 2020-11-17 14:51:47
  */
 
-import { IframeComm } from './lib/core'
+import { EmbedIframe } from './lib/core'
 
 function init(options, selector) {
-  let iframeComm = new IframeComm()
+  let iframeComm = new EmbedIframe()
   iframeComm.create(options, selector)
   return iframeComm
 }
-const parent = window.parent === window ? null : new IframeComm()
+const parent = window.parent === window ? null : new EmbedIframe()
 
 export default {
   init,
