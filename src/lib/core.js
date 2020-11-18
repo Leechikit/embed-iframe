@@ -3,7 +3,7 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-17 15:46:55
+ * @LastEditTime: 2020-11-18 10:00:13
  */
 
 const getUid = require('../utils/getUid')
@@ -15,7 +15,7 @@ const IFRAME_EVENT = {
 export class EmbedIframe {
   constructor() {
     this._uid = getUid()
-    this._events = []
+    this._events = new Map()
     this._isParentFrame = window.parent === window
     this._selfOrign = location.origin
     this._targetOrigin = this._isParentFrame
@@ -34,23 +34,18 @@ export class EmbedIframe {
     window.addEventListener('message', this._messageEventHandler.bind(this))
   }
 
-  create({ url, height, minHeight, maxHeight }, selector = '.embed-iframe') {
-    if (!selector || !url) throw new Error('params is not right!')
+  create(options, selector = '.embed-iframe') {
+    if (!selector || !options.url) throw new Error('params is not right!')
     // 解析子框架URL
-    this._targetOrigin = this._getOrigin(url)
+    this._targetOrigin = this._getOrigin(options.url)
 
-    this._resetHeight = height
     this._selector = selector
     let containerEl =
       typeof selector === 'string' ? document.querySelector(selector) : selector
     if (containerEl) {
       this._iframe = document.createElement('iframe')
-      this._iframe.src = url
       this._iframe.id = this._uid
-      this._iframe.style.width = '100%'
-      this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
-      minHeight && (this._iframe.style.minHeight = minHeight)
-      maxHeight && (this._iframe.style.maxHeight = maxHeight)
+      this.load(options)
 
       this._iframe.addEventListener(
         'load',
@@ -71,10 +66,12 @@ export class EmbedIframe {
     this._iframe.parentNode.removeChild(this._iframe)
   }
 
-  load({ url, height, minHeight, maxHeight }) {
-    if (!url) return
+  load({ url, height, minHeight, maxHeight, border }) {
+    if (!url) throw new Error('params is not right!')
     this._resetHeight = height
     this._iframe.src = url
+    this._iframe.style.border = border ? border : '1px solid #ccc'
+    this._iframe.style.width = '100%'
     this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
     minHeight && (this._iframe.style.minHeight = minHeight)
     maxHeight && (this._iframe.style.maxHeight = maxHeight)
@@ -93,7 +90,14 @@ export class EmbedIframe {
   }
 
   on(event, cb) {
-    this._events[event] = cb
+    for (let key in IFRAME_EVENT) {
+      if (IFRAME_EVENT[key] === event) throw new Error(`Unexpected token '${event}'`)
+    }
+    this._events.set(event, cb)
+  }
+
+  off(event) {
+    this._events.delete(event)
   }
 
   onLoad(cb) {
@@ -134,7 +138,7 @@ export class EmbedIframe {
       this._onReady && this._onReady.call(null, ...args)
     }
 
-    let cb = this._events[_iframeEvent]
+    let cb = this._events.get(_iframeEvent)
     typeof cb === 'function' && cb.call(null, ...args)
   }
 
