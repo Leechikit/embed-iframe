@@ -3,13 +3,13 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-18 10:00:13
+ * @LastEditTime: 2020-11-26 16:07:15
  */
 
 const getUid = require('../utils/getUid')
 
 const IFRAME_EVENT = {
-  ready: 'iframe_ready'
+  resize: 'iframe_resize'
 }
 
 export class EmbedIframe {
@@ -46,11 +46,17 @@ export class EmbedIframe {
       this._iframe = document.createElement('iframe')
       this._iframe.id = this._uid
       this.load(options)
-
-      this._iframe.addEventListener(
-        'load',
-        event => this._onLoad && this._onLoad.call(null, event)
-      )
+      if (this._iframe.attachEvent) {
+        this._iframe.attachEvent(
+          'onload',
+          event => this._onLoad && this._onLoad.call(null, event)
+        )
+      } else {
+        this._iframe.addEventListener(
+          'load',
+          event => this._onLoad && this._onLoad.call(null, event)
+        )
+      }
       this._iframe.addEventListener(
         'error',
         event => this._onError && this._onError.call(null, event)
@@ -76,6 +82,18 @@ export class EmbedIframe {
     minHeight && (this._iframe.style.minHeight = minHeight)
     maxHeight && (this._iframe.style.maxHeight = maxHeight)
   }
+  
+  resize(width, height) {
+    if (this._isParentFrame) {
+      width && (this._iframe.style.width = width + 'px')
+      height && (this._iframe.style.height = height + 'px')
+    } else {
+      this.emit(IFRAME_EVENT.resize, {
+        width,
+        height
+      })
+    }
+  }
 
   emit(event, ...args) {
     if (!this._contentWindow) return
@@ -91,7 +109,8 @@ export class EmbedIframe {
 
   on(event, cb) {
     for (let key in IFRAME_EVENT) {
-      if (IFRAME_EVENT[key] === event) throw new Error(`Unexpected token '${event}'`)
+      if (IFRAME_EVENT[key] === event)
+        throw new Error(`Unexpected token '${event}'`)
     }
     this._events.set(event, cb)
   }
@@ -108,14 +127,8 @@ export class EmbedIframe {
     this._onError = typeof cb === 'function' ? cb : () => void 0
   }
 
-  onReady(cb) {
-    this._onReady = typeof cb === 'function' ? cb : () => void 0
-  }
-
-  _loadEventHandler(event) {
-    this.emit(IFRAME_EVENT.ready, {
-      height: document.documentElement.scrollHeight
-    })
+  _loadEventHandler() {
+    this.resize(null, document.documentElement.scrollHeight)
   }
 
   _messageEventHandler(event) {
@@ -131,11 +144,11 @@ export class EmbedIframe {
     if (this._iframe && this._iframe.src !== _iframeSrc) return
 
     // 子框架渲染完毕
-    if (this._isParentFrame && _iframeEvent === IFRAME_EVENT.ready) {
+    if (this._isParentFrame && _iframeEvent === IFRAME_EVENT.resize) {
       // 没有配置高度按文档高度设置
-      !this._resetHeight && (this._iframe.style.height = args[0].height + 'px')
-      // 回调
-      this._onReady && this._onReady.call(null, ...args)
+      !this._resetHeight &&
+        args[0].height &&
+        (this._iframe.style.height = args[0].height + 'px')
     }
 
     let cb = this._events.get(_iframeEvent)
