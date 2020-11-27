@@ -3,7 +3,7 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-27 10:37:40
+ * @LastEditTime: 2020-11-27 11:18:26
  */
 
 const getUid = require('../utils/getUid')
@@ -77,11 +77,12 @@ export class EmbedIframe {
     if (!url) throw new Error('params is not right!')
     this._resetHeight = height
     this._iframe.src = url
-    this._iframe.style.border = border ? border : '1px solid #ccc'
+    this._iframe.setAttribute('frameborder', '0')
     this._iframe.style.width = '100%'
     this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
     minHeight && (this._iframe.style.minHeight = minHeight)
     maxHeight && (this._iframe.style.maxHeight = maxHeight)
+    border && (this._iframe.style.border = border)
   }
 
   resize(width, height) {
