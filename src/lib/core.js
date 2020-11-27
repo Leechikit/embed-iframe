@@ -3,13 +3,14 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-26 16:07:15
+ * @LastEditTime: 2020-11-27 10:37:40
  */
 
 const getUid = require('../utils/getUid')
 
 const IFRAME_EVENT = {
-  resize: 'iframe_resize'
+  resize: 'iframe_resize',
+  ready: 'iframe_ready'
 }
 
 export class EmbedIframe {
@@ -82,7 +83,7 @@ export class EmbedIframe {
     minHeight && (this._iframe.style.minHeight = minHeight)
     maxHeight && (this._iframe.style.maxHeight = maxHeight)
   }
-  
+
   resize(width, height) {
     if (this._isParentFrame) {
       width && (this._iframe.style.width = width + 'px')
@@ -93,6 +94,10 @@ export class EmbedIframe {
         height
       })
     }
+  }
+
+  ready() {
+    this.emit(IFRAME_EVENT.ready)
   }
 
   emit(event, ...args) {
@@ -127,6 +132,10 @@ export class EmbedIframe {
     this._onError = typeof cb === 'function' ? cb : () => void 0
   }
 
+  onReady(cb) {
+    this._onReady = typeof cb === 'function' ? cb : () => void 0
+  }
+
   _loadEventHandler() {
     this.resize(null, document.documentElement.scrollHeight)
   }
@@ -143,12 +152,20 @@ export class EmbedIframe {
 
     if (this._iframe && this._iframe.src !== _iframeSrc) return
 
-    // 子框架渲染完毕
-    if (this._isParentFrame && _iframeEvent === IFRAME_EVENT.resize) {
-      // 没有配置高度按文档高度设置
-      !this._resetHeight &&
-        args[0].height &&
-        (this._iframe.style.height = args[0].height + 'px')
+    if (this._isParentFrame) {
+      switch (_iframeEvent) {
+        // 处理子框架调整尺寸事件
+        case IFRAME_EVENT.resize:
+          // 没有配置高度按文档高度设置
+          !this._resetHeight &&
+            args[0].height &&
+            (this._iframe.style.height = args[0].height + 'px')
+          break
+        // 处理子框架准备就绪事件
+        case IFRAME_EVENT.ready:
+          this._onReady && this._onReady.call(null)
+          break
+      }
     }
 
     let cb = this._events.get(_iframeEvent)
