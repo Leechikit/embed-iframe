@@ -3,7 +3,7 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-27 11:18:26
+ * @LastEditTime: 2020-11-30 16:30:37
  */
 
 const getUid = require('../utils/getUid')
@@ -158,7 +158,8 @@ export class EmbedIframe {
         // 处理子框架调整尺寸事件
         case IFRAME_EVENT.resize:
           // 没有配置高度按文档高度设置
-          !this._resetHeight &&
+          this._iframe &&
+            !this._resetHeight &&
             args[0].height &&
             (this._iframe.style.height = args[0].height + 'px')
           break

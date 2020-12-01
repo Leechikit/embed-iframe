@@ -3,14 +3,13 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:15:34
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-27 11:17:45
+ * @LastEditTime: 2020-11-30 16:59:46
  */
 
 import { EmbedIframe } from './lib/core'
+import pagejson from '../package.json'
 
-const VERSION = '0.1.1'
-
-const childFrameAPI = ['emit','resize', 'ready', 'off', 'on'].reduce(
+const childFrameAPI = ['emit', 'resize', 'ready', 'off', 'on'].reduce(
   (total, curr) => {
     total[curr] = () => {}
     return total
@@ -28,5 +27,5 @@ const parent = window.parent === window ? childFrameAPI : new EmbedIframe()
 export default {
   init,
   parent,
-  version: VERSION
+  version: pagejson.version
 }
