@@ -3,10 +3,12 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-11-30 16:30:37
+ * @LastEditTime: 2020-12-04 16:20:07
  */
 
-const getUid = require('../utils/getUid')
+import getUid from '../utils/getUid'
+import parseUrlParam from '../utils/parseUrlParam'
+import packageJson from '../../package.json'
 
 const IFRAME_EVENT = {
   resize: 'iframe_resize',
@@ -76,7 +78,7 @@ export class EmbedIframe {
   load({ url, height, minHeight, maxHeight, border }) {
     if (!url) throw new Error('params is not right!')
     this._resetHeight = height
-    this._iframe.src = url
+    this._iframe.src = this._addUrlParam(url, 'iframe_id', this._iframe.id)
     this._iframe.setAttribute('frameborder', '0')
     this._iframe.style.width = '100%'
     this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
@@ -105,8 +107,9 @@ export class EmbedIframe {
     if (!this._contentWindow) return
     this._contentWindow.postMessage(
       {
+        type: packageJson.libraryName,
         _iframeEvent: event,
-        _iframeSrc: location.href,
+        _iframeId: parseUrlParam('iframe_id'),
         args
       },
       this._targetOrigin
@@ -142,16 +145,18 @@ export class EmbedIframe {
   }
 
   _messageEventHandler(event) {
+    if (event.data.type !== packageJson.libraryName) return
     if (
       this._isHTTP(this._selfOrign) &&
       this._isHTTP(this._targetOrigin) &&
       event.origin !== this._targetOrigin
-    )
-      return
+    ) {
+      throw new Error('event must be came from parent frame or child frame')
+    }
 
-    const { _iframeEvent, _iframeSrc, args } = event.data
+    const { _iframeEvent, _iframeId, args } = event.data
 
-    if (this._iframe && this._iframe.src !== _iframeSrc) return
+    if (this._iframe && this._iframe.id !== _iframeId) return
 
     if (this._isParentFrame) {
       switch (_iframeEvent) {
@@ -191,5 +196,19 @@ export class EmbedIframe {
       } catch (error) {}
     }
     return origin
+  }
+
+  _addUrlParam(url, key, value) {
+    let result = url
+    try {
+      let urlObj = new URL(url)
+      if (urlObj.search.indexOf(key) === -1) {
+        urlObj.search = `${urlObj.search}${
+          urlObj.search ? '&' : ''
+        }${key}=${value}`
+      }
+      result = urlObj.href
+    } catch (error) {}
+    return result
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import { EmbedIframe } from './lib/core'
-import pagejson from '../package.json'
+import packageJson from '../package.json'
 
 const childFrameAPI = ['emit', 'resize', 'ready', 'off', 'on'].reduce(
   (total, curr) => {
@@ -27,5 +27,5 @@ const parent = window.parent === window ? childFrameAPI : new EmbedIframe()
 export default {
   init,
   parent,
-  version: pagejson.version
+  version: packageJson.version
 }
