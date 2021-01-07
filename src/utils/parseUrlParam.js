@@ -3,8 +3,9 @@
  * @Autor: Lizijie
  * @Date: 2020-12-04 15:00:56
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-12-04 15:03:48
+ * @LastEditTime: 2021-01-07 14:40:50
  */
+import getUrlParam from './getUrlParam'
 /**
  * 获取地址栏参数
  *
@@ -12,11 +13,7 @@
  */
 export default function parseUrlParam(paramName, url = window.location.href) {
   let result = {}
-  let paramsArr = url.split('?')
-  if (paramsArr.length < 2) {
-    return ''
-  }
-  let paramsStr = paramsArr[paramsArr.length - 1]
+  let paramsStr = getUrlParam(url)
   let params = paramsStr.split('&')
   params.forEach(param => {
     let [key, value] = param.split('=')

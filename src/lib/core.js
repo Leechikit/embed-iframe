@@ -3,11 +3,12 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2020-12-07 10:50:56
+ * @LastEditTime: 2021-01-07 14:45:17
  */
 
 import getUid from '../utils/getUid'
 import parseUrlParam from '../utils/parseUrlParam'
+import getUrlParam from '../utils/getUrlParam'
 import packageJson from '../../package.json'
 
 const IFRAME_EVENT = {
@@ -105,6 +106,7 @@ export class EmbedIframe {
 
   emit(event, ...args) {
     if (!this._contentWindow) return
+
     this._contentWindow.postMessage(
       {
         type: packageJson.libraryName,
@@ -146,8 +148,6 @@ export class EmbedIframe {
 
   _messageEventHandler(event) {
     if (event.data.type !== packageJson.libraryName) return
-    console.log(event.origin)
-    console.log(this._targetOrigin)
     if (
       this._isHTTP(this._selfOrign) &&
       this._isHTTP(this._targetOrigin) &&
@@ -204,12 +204,10 @@ export class EmbedIframe {
     let result = url
     try {
       let urlObj = new URL(url)
-      if (urlObj.search.indexOf(key) === -1) {
-        urlObj.search = `${urlObj.search}${
-          urlObj.search ? '&' : ''
-        }${key}=${value}`
+      let paramsStr = getUrlParam(url)
+      if (paramsStr.indexOf(key) === -1) {
+        result = `${url}${paramsStr ? '&' : ''}${key}=${value}`
       }
-      result = urlObj.href
     } catch (error) {}
     return result
   }
