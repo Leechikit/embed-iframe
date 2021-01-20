@@ -3,7 +3,7 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2021-01-07 14:45:17
+ * @LastEditTime: 2021-01-20 10:09:02
  */
 
 import getUid from '../utils/getUid'
@@ -79,7 +79,10 @@ export class EmbedIframe {
   load({ url, height, minHeight, maxHeight, border }) {
     if (!url) throw new Error('params is not right!')
     this._resetHeight = height
-    this._iframe.src = this._addUrlParam(url, 'iframe_id', this._iframe.id)
+    this._iframe.src = this._addUrlParam(url, [
+      { name: 'iframe_id', value: this._iframe.id, hash: true },
+      { name: 'timestamp', value: new Date().getTime() }
+    ])
     this._iframe.setAttribute('frameborder', '0')
     this._iframe.style.width = '100%'
     this._iframe.style.height = this._resetHeight ? this._resetHeight : '100%'
@@ -200,14 +203,25 @@ export class EmbedIframe {
     return origin
   }
 
-  _addUrlParam(url, key, value) {
+  _addUrlParam(url, arrs) {
+    // arrs = { name: key值, value: value值, hash: 是否hash模式 }
     let result = url
     try {
       let urlObj = new URL(url)
       let paramsStr = getUrlParam(url)
-      if (paramsStr.indexOf(key) === -1) {
-        result = `${url}${paramsStr ? '&' : ''}${key}=${value}`
-      }
+      let extendParams = ''
+      arrs.forEach(({ name, value, hash = false }) => {
+        if (hash) {
+          if (paramsStr.indexOf(name) === -1) {
+            extendParams += `${extendParams ? '&' : ''}${name}=${value}`
+          }
+        } else {
+          if (urlObj.search.indexOf(name) === -1) {
+            urlObj.search += `${urlObj.search ? '&' : '?'}${name}=${value}`
+          }
+        }
+      })
+      result = `${urlObj.href}${paramsStr ? '&' : '?'}${extendParams}`
     } catch (error) {}
     return result
   }
