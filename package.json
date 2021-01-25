@@ -3,7 +3,7 @@
   "libraryName": "EmbedIframe",
   "version": "0.1.5",
   "description": "A tool for embedding iframe and iframe communication",
-  "main": "./src/embed-iframe.js",
+  "main": "./dist/embed-iframe.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack-cli --config webpack.config.js"
