@@ -3,7 +3,7 @@
  * @Autor: Lizijie
  * @Date: 2020-11-12 15:24:26
  * @LastEditors: Lizijie
- * @LastEditTime: 2021-01-20 10:09:02
+ * @LastEditTime: 2021-01-27 11:29:42
  */
 
 import getUid from '../utils/getUid'
@@ -80,8 +80,7 @@ export class EmbedIframe {
     if (!url) throw new Error('params is not right!')
     this._resetHeight = height
     this._iframe.src = this._addUrlParam(url, [
-      { name: 'iframe_id', value: this._iframe.id, hash: true },
-      { name: 'timestamp', value: new Date().getTime() }
+      { name: 'iframe_id', value: this._iframe.id, hash: true }
     ])
     this._iframe.setAttribute('frameborder', '0')
     this._iframe.style.width = '100%'
