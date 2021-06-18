@@ -1,7 +1,7 @@
 {
   "name": "embed-iframe",
   "libraryName": "EmbedIframe",
-  "version": "0.1.7",
+  "version": "0.1.6",
   "description": "A tool for embedding iframe and iframe communication",
   "main": "./dist/embed-iframe.min.js",
   "scripts": {
