@@ -24,8 +24,12 @@ function init(options, selector) {
 }
 const parent = window.parent === window ? childFrameAPI : new EmbedIframe()
 
-export default {
+const globalExport = {
   init,
   parent,
   version: packageJson.version
 }
+
+window.EmbedIframe = globalExport
+
+export default globalExport
