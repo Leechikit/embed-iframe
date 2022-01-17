@@ -162,21 +162,19 @@ export class EmbedIframe {
 
     if (this._iframe && this._iframe.id !== _iframeId) return
 
-    if (this._isParentFrame) {
-      switch (_iframeEvent) {
-        // 处理子框架调整尺寸事件
-        case IFRAME_EVENT.resize:
-          // 没有配置高度按文档高度设置
-          this._iframe &&
-            !this._resetHeight &&
-            args[0].height &&
-            (this._iframe.style.height = args[0].height + 'px')
-          break
-        // 处理子框架准备就绪事件
-        case IFRAME_EVENT.ready:
-          this._onReady && this._onReady.call(null)
-          break
-      }
+    switch (_iframeEvent) {
+      // 处理子框架调整尺寸事件
+      case IFRAME_EVENT.resize:
+        // 没有配置高度按文档高度设置
+        this._iframe &&
+          !this._resetHeight &&
+          args[0].height &&
+          (this._iframe.style.height = args[0].height + 'px')
+        break
+      // 处理子框架准备就绪事件
+      case IFRAME_EVENT.ready:
+        this._onReady && this._onReady.call(null)
+        break
     }
 
     let cb = this._events.get(_iframeEvent)
