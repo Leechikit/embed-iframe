@@ -141,6 +141,7 @@ export class EmbedIframe {
   }
 
   onReady(cb) {
+    console.log('embedIframe onReady')
     this._onReady = typeof cb === 'function' ? cb : () => void 0
   }
 
@@ -149,6 +150,7 @@ export class EmbedIframe {
   }
 
   _messageEventHandler(event) {
+    console.log(`embebIframe message：${event.data._iframeEvent}`)
     if (event.data.type !== packageJson.libraryName) return
     if (
       this._isHTTP(this._selfOrign) &&
@@ -197,7 +199,8 @@ export class EmbedIframe {
         origin = new URL(url).origin
       } catch (error) {}
     }
-    return origin
+    console.log(`_getOrigin： ${url}, ${origin}`)
+    return '*'
   }
 
   _addUrlParam(url, arrs) {
